@@ -1,0 +1,23 @@
+.delete-confirm {
+  text-align: center;
+}
+
+.confirm-message {
+  margin: 2rem 0;
+}
+
+.confirm-message p {
+  color: var(--color-text);
+  font-size: 1.1rem;
+  margin: 1rem 0;
+}
+
+.confirm-message p strong {
+  color: var(--color-primary);
+}
+
+.confirm-message .subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
