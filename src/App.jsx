@@ -17,6 +17,8 @@ export default function App() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState(null)
+  const [usersToDelete, setUsersToDelete] = useState([])
+  const [selectedUsers, setSelectedUsers] = useState(new Set())
   const [nextId, setNextId] = useState(11)
 
   // Load theme from localStorage on mount
@@ -81,6 +83,32 @@ export default function App() {
 
   const handleDeleteUser = (user) => {
     setUserToDelete(user)
+    setUsersToDelete([])
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleSelectUser = (userId, isChecked) => {
+    const newSelected = new Set(selectedUsers)
+    if (isChecked) {
+      newSelected.add(userId)
+    } else {
+      newSelected.delete(userId)
+    }
+    setSelectedUsers(newSelected)
+  }
+
+  const handleSelectAll = () => {
+    if (selectedUsers.size === filteredUsers.length && selectedUsers.size > 0) {
+      setSelectedUsers(new Set())
+    } else {
+      setSelectedUsers(new Set(filteredUsers.map(u => u.id)))
+    }
+  }
+
+  const handleDeleteSelected = () => {
+    const usersArray = filteredUsers.filter(u => selectedUsers.has(u.id))
+    setUsersToDelete(usersArray)
+    setUserToDelete(null)
     setIsDeleteModalOpen(true)
   }
 
@@ -108,17 +136,31 @@ export default function App() {
     setEditingUser(null)
   }
 
-  const handleConfirmDelete = (userId) => {
-    setUsers(users.filter(u => u.id !== userId))
+  const handleConfirmDelete = (userIds) => {
+    const idsArray = Array.isArray(userIds) ? userIds : [userIds]
+    setUsers(users.filter(u => !idsArray.includes(u.id)))
+    setSelectedUsers(new Set())
     setIsDeleteModalOpen(false)
     setUserToDelete(null)
+    setUsersToDelete([])
   }
+
+  const selectedCount = selectedUsers.size
+  const isAllSelected = selectedCount === filteredUsers.length && filteredUsers.length > 0
 
   return (
     <div className="app">
       <header className="header">
         <h1>User Directory</h1>
         <div className="header-actions">
+          {selectedCount > 0 && (
+            <div className="bulk-actions">
+              <span className="selection-count">{selectedCount} selected</span>
+              <button className="btn-delete-selected" onClick={handleDeleteSelected}>
+                🗑️ Delete ({selectedCount})
+              </button>
+            </div>
+          )}
           <button className="btn-add-user" onClick={handleAddNewUser}>
             ➕ Add User
           </button>
@@ -127,7 +169,18 @@ export default function App() {
       </header>
 
       <main className="container">
-        <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <div className="search-and-select">
+          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+          {filteredUsers.length > 0 && (
+            <button 
+              className="btn-select-all"
+              onClick={handleSelectAll}
+              title={isAllSelected ? 'Deselect all' : 'Select all'}
+            >
+              {isAllSelected ? '☑️ Deselect All' : '☐ Select All'}
+            </button>
+          )}
+        </div>
 
         {loading && <p className="message">Loading users...</p>}
         {error && <p className="message error">Error: {error}</p>}
@@ -141,6 +194,8 @@ export default function App() {
             <UserCard 
               key={user.id} 
               user={user}
+              isSelected={selectedUsers.has(user.id)}
+              onSelectChange={handleSelectUser}
               onEdit={handleEditUser}
               onDelete={handleDeleteUser}
             />
@@ -161,10 +216,12 @@ export default function App() {
 
       <DeleteConfirmModal
         user={userToDelete}
+        users={usersToDelete.length > 0 ? usersToDelete : undefined}
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false)
           setUserToDelete(null)
+          setUsersToDelete([])
         }}
         onConfirm={handleConfirmDelete}
       />

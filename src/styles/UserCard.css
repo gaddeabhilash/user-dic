@@ -1,6 +1,6 @@
 .user-card {
   background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: 12px;
   padding: 1.5rem;
   display: flex;
@@ -17,6 +17,26 @@
   box-shadow: 0 10px 25px var(--color-shadow);
 }
 
+.user-card.selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-secondary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 10px 25px var(--color-shadow);
+}
+
+.user-card-checkbox {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.selection-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
 .user-avatar {
   width: 80px;
   height: 80px;
@@ -29,6 +49,7 @@
   font-weight: bold;
   color: white;
   margin-bottom: 1rem;
+  margin-top: 0.5rem;
 }
 
 .user-content {
@@ -115,10 +136,21 @@
     padding: 1rem;
   }
 
+  .user-card-checkbox {
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .selection-checkbox {
+    width: 18px;
+    height: 18px;
+  }
+
   .user-avatar {
     width: 70px;
     height: 70px;
     font-size: 1.75rem;
+    margin-top: 0.75rem;
   }
 
   .label {

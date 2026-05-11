@@ -1,8 +1,17 @@
 import '../styles/UserCard.css'
 
-export default function UserCard({ user, onEdit, onDelete }) {
+export default function UserCard({ user, onEdit, onDelete, isSelected, onSelectChange }) {
   return (
-    <div className="user-card">
+    <div className={`user-card ${isSelected ? 'selected' : ''}`}>
+      <div className="user-card-checkbox">
+        <input
+          type="checkbox"
+          id={`user-${user.id}`}
+          checked={isSelected}
+          onChange={(e) => onSelectChange(user.id, e.target.checked)}
+          className="selection-checkbox"
+        />
+      </div>
       <div className="user-avatar">
         {user.name.charAt(0).toUpperCase()}
       </div>
